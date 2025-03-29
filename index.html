@@ -39,8 +39,8 @@
 
     </div>
 
-    <!-- 📢 사운드 -->
-    <audio id="flipSound" src="https://freesound.org/data/previews/256/256113_3263906-lq.mp3"></audio>
+    <!-- 📢 로컬 사운드 -->
+    <audio id="flipSound" src="./audio/bg.mp3" preload="auto"></audio>
 
     <script>
         const originalQuestions = [
@@ -86,38 +86,44 @@
             const targetEl = document.getElementById('target');
             const sound = document.getElementById('flipSound');
 
-            // 회전 각도 누적 및 애니메이션
-            rotateDeg += 720; // 두바퀴
+            // 카드 회전
+            rotateDeg += 720;
             cardBox.style.transform = `rotateY(${rotateDeg}deg)`;
 
-            // 사운드 효과
-            sound.currentTime = 0;
-            sound.play();
+            // 사운드 재생
+            try {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.warn("오디오 재생 실패:", e));
+            } catch (e) {
+                console.warn("오디오 예외:", e);
+            }
 
             setTimeout(() => {
-                // 배경 랜덤
+                // 배경 색상 무작위
                 const baseClass = "flip-card rounded-2xl shadow-2xl p-8 aspect-square flex flex-col justify-center items-center space-y-4 transition-all duration-500";
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 cardBox.className = `${baseClass} ${randomColor}`;
 
-                // 질문
                 let questionText;
+                let targetText = "";
+
                 if (questions.length > 0) {
                     const randomIndex = Math.floor(Math.random() * questions.length);
                     questionText = questions.splice(randomIndex, 1)[0];
+                    targetText = targets[Math.floor(Math.random() * targets.length)];
                 } else if (!usedFinal) {
                     questionText = finalQuestion;
+                    targetText = "모두가 돌아가며 답합니다.";
                     usedFinal = true;
                 } else {
                     questionText = "모든 질문이 완료되었습니다.";
+                    targetText = "";
                     document.getElementById('nextBtn').disabled = true;
                     document.getElementById('nextBtn').classList.add('opacity-50', 'cursor-not-allowed');
                 }
 
-                const randomTarget = targets[Math.floor(Math.random() * targets.length)];
-
                 questionEl.textContent = questionText;
-                targetEl.textContent = questionText === "모든 질문이 완료되었습니다." ? "" : randomTarget;
+                targetEl.textContent = targetText;
 
             }, 500);
         }
