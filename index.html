@@ -37,6 +37,10 @@
             다음 질문 🔄
         </button>
 
+        <button id="restartBtn" onclick="restart()" class="hidden w-full py-3 rounded-xl bg-gray-400 text-white font-bold hover:bg-gray-500 transition">
+            다시 하기 🔁
+        </button>
+
     </div>
 
     <!-- 📢 로컬 사운드 -->
@@ -77,7 +81,18 @@
         function start() {
             document.getElementById('startPage').classList.add('hidden');
             document.getElementById('cardPage').classList.remove('hidden');
+            document.getElementById('restartBtn').classList.add('hidden');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').classList.remove('opacity-50', 'cursor-not-allowed');
             nextQuestion();
+        }
+
+        function restart() {
+            questions = [...originalQuestions];
+            usedFinal = false;
+            rotateDeg = 0;
+            document.getElementById('cardPage').classList.add('hidden');
+            document.getElementById('startPage').classList.remove('hidden');
         }
 
         function nextQuestion() {
@@ -86,11 +101,9 @@
             const targetEl = document.getElementById('target');
             const sound = document.getElementById('flipSound');
 
-            // 카드 회전
             rotateDeg += 720;
             cardBox.style.transform = `rotateY(${rotateDeg}deg)`;
 
-            // 사운드 재생
             try {
                 sound.currentTime = 0;
                 sound.play().catch(e => console.warn("오디오 재생 실패:", e));
@@ -99,7 +112,6 @@
             }
 
             setTimeout(() => {
-                // 배경 색상 무작위
                 const baseClass = "flip-card rounded-2xl shadow-2xl p-8 aspect-square flex flex-col justify-center items-center space-y-4 transition-all duration-500";
                 const randomColor = colors[Math.floor(Math.random() * colors.length)];
                 cardBox.className = `${baseClass} ${randomColor}`;
@@ -120,6 +132,7 @@
                     targetText = "";
                     document.getElementById('nextBtn').disabled = true;
                     document.getElementById('nextBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                    document.getElementById('restartBtn').classList.remove('hidden');
                 }
 
                 questionEl.textContent = questionText;
