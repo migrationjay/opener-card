@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랜덤 질문 카드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .slot {
+            animation: slot-spin 0.5s ease-in-out;
+        }
+        @keyframes slot-spin {
+            0% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(20px); opacity: 0; }
+            51% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-300 flex items-center justify-center p-4">
+
+    <!-- 🟣 START PAGE -->
+    <div id="startPage" class="w-full max-w-md space-y-8 text-center">
+        <h1 class="text-4xl font-extrabold text-indigo-800 drop-shadow">🎉 오프닝 질문</h1>
+        <p class="text-gray-700 text-lg">버튼을 눌러 질문을 시작하세요!</p>
+        <button onclick="start()" class="w-full py-4 rounded-xl bg-indigo-500 text-white text-xl font-bold hover:bg-indigo-600 transition">
+            시작하기 🚀
+        </button>
+    </div>
+
+    <!-- 🟣 CARD PAGE -->
+    <div id="cardPage" class="hidden w-full max-w-md space-y-6">
+
+        <div id="cardBox" class="card rounded-2xl shadow-2xl p-8 aspect-square flex flex-col justify-center items-center space-y-4 transition-all duration-500">
+
+            <div id="question" class="text-xl font-semibold text-gray-800 text-center">질문이 여기에 표시됩니다.</div>
+            <div id="target" class="text-md text-gray-600 text-center">대답할 사람이 여기에 표시됩니다.</div>
+
+        </div>
+
+        <button id="nextBtn" onclick="nextQuestion()" class="w-full py-3 rounded-xl bg-indigo-500 text-white font-bold hover:bg-indigo-600 transition">
+            다음 질문 🎲
+        </button>
+
+    </div>
+
+    <script>
+        const originalQuestions = [
+            "어릴 때 가졌던 장래희망은?",
+            "내 스마트폰 속 최근 사진은?",
+            "요즘 일할 때 제일 재미있는 것은?",
+            "지금 당장 여행을 간다면?",
+            "내 인생에서 최고의 보람된 순간은?",
+            "최근 가장 감명깊게 본 영화나 드라마는?",
+            "초능력을 가진다면 어떤 능력을?"
+        ];
+
+        const finalQuestion = "오늘 과정에 대한 기대는?";
+
+        const targets = [
+            "내 양 옆의 사람이 답합니다.",
+            "모두가 돌아가며 답합니다.",
+            "오늘 가장 일찍 온 사람이 답합니다.",
+            "3명을 지목해주세요.",
+            "나와 내 앞사람이 답합니다.",
+            "내 양 옆의 사람이 답합니다."
+        ];
+
+        const colors = [
+            "bg-pink-100",
+            "bg-green-100",
+            "bg-yellow-100",
+            "bg-blue-100",
+            "bg-indigo-100",
+            "bg-purple-100",
+            "bg-rose-100",
+            "bg-amber-100"
+        ];
+
+        let questions = [...originalQuestions];
+        let usedFinal = false;
+
+        function start() {
+            document.getElementById('startPage').classList.add('hidden');
+            document.getElementById('cardPage').classList.remove('hidden');
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            const cardBox = document.getElementById('cardBox');
+            const questionEl = document.getElementById('question');
+            const targetEl = document.getElementById('target');
+
+            // 랜덤 색상 적용
+            cardBox.className = "card rounded-2xl shadow-2xl p-8 aspect-square flex flex-col justify-center items-center space-y-4 transition-all duration-500";
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            cardBox.classList.add(randomColor);
+
+            // 애니메이션
+            questionEl.classList.add('slot');
+            targetEl.classList.add('slot');
+
+            setTimeout(() => {
+                let questionText;
+                if (questions.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * questions.length);
+                    questionText = questions.splice(randomIndex, 1)[0];
+                } else if (!usedFinal) {
+                    questionText = finalQuestion;
+                    usedFinal = true;
+                } else {
+                    questionText = "모든 질문이 완료되었습니다.";
+                    document.getElementById('nextBtn').disabled = true;
+                    document.getElementById('nextBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                }
+
+                const randomTarget = targets[Math.floor(Math.random() * targets.length)];
+                questionEl.textContent = questionText;
+                targetEl.textContent = questionText === "모든 질문이 완료되었습니다." ? "" : randomTarget;
+
+                questionEl.classList.remove('slot');
+                targetEl.classList.remove('slot');
+            }, 400);
+        }
+    </script>
+
+</body>
+
+</html>
